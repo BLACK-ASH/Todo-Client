@@ -22,7 +22,7 @@ const Register = () => {
 
             //   To Post The User Data To The Server
             if (emailVerified) {
-                axios.post('http://localhost:2006/api/register/', { email, username, password }, { withCredentials: true })
+                axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
                     .then(response => {
                         console.log('Success:', response.data)
                         if (response.data.status === "success") {
@@ -62,7 +62,7 @@ const Register = () => {
 
     // TO handle Otp
     const handleOtp = () => {
-        axios.post('http://localhost:2006/api/register-otp', { email })
+        axios.post('https://todo-server-ikof.onrender.com/api/register-otp', { email })
             .then(response => {
             })
             .catch(error => {
@@ -77,7 +77,7 @@ const Register = () => {
     }
     // To Verifiy Otp
     const handleOtpSubmit = () => {
-        axios.post('http://localhost:2006/api/verify-otp', { email, otp })
+        axios.post('https://todo-server-ikof.onrender.com/api/verify-otp', { email, otp })
             .then(response => {
                 setEmailVerified(true)
                 alert(response.data)

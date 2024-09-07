@@ -10,7 +10,7 @@ const Profile = () => {
 
     useEffect(() => {
         // Fetch the user's profile
-        axios.get('http://localhost:2006/api/user/profile/', { withCredentials: true })
+        axios.get('https://todo-server-ikof.onrender.com/api/user/profile/', { withCredentials: true })
             .then((response) => {
                 const userInfo = response.data;
                 setProfile(userInfo);
@@ -23,7 +23,7 @@ const Profile = () => {
 
     const signOut = () => {
         // Sign-out request
-        axios.post('http://localhost:2006/api/signout', {}, { withCredentials: true })
+        axios.post('https://todo-server-ikof.onrender.com/api/signout', {}, { withCredentials: true })
             .then((response) => {
                 if (response.data.status === 'success') {
                     // After signing out, redirect to the login page

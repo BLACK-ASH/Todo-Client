@@ -9,7 +9,7 @@ function App() {
   const [Username, setUsername] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:2006/api/user/profile/', { withCredentials: true })
+    axios.get('https://todo-server-ikof.onrender.com/api/user/profile/', { withCredentials: true })
       .then((response) => {
         const userInfo = response.data.username;
         setUsername(userInfo)

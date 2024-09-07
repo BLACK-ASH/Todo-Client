@@ -16,7 +16,7 @@ const Login = () => {
 
         // To Post The User Data To The Server
 
-        axios.post('http://localhost:2006/api/login/', { email, password },{withCredentials:true})
+        axios.post('https://todo-server-ikof.onrender.com/api/login/', { email, password },{withCredentials:true})
         .then(response => {
             console.log('Success:', response.data)
             if(response.data.status === "success"){

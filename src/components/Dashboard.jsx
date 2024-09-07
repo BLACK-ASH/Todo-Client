@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [first, setFirst] = useState(true)
   const navigate = useNavigate();
 
-  const url = "http://localhost:2006"
+  const url = "https://todo-server-ikof.onrender.com"
 
   useEffect(() => {
     axios.get(url + '/api/user/todos', { withCredentials: true })
