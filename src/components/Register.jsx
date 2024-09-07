@@ -142,9 +142,9 @@ const Register = () => {
                             className="absolute bottom-[10px] right-2 focus:outline-none"
                         >
                             {showPassword ? (
-                                <img src="./src/img/hide.svg" alt="hide" />
+                                <img src="./img/unhide.svg" alt="show" />
                             ) : (
-                                <img src="./src/img/unhide.svg" alt="show" />
+                                <img src="./img/hide.svg" alt="hide" />
                             )}
                         </button>
                     </div>
