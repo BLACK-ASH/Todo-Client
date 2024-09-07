@@ -22,35 +22,40 @@ const Register = () => {
             //   To Post The User Data To The Server
             if (emailVerified) {
                 if (username.length >= 5) {
-                    if (12 >= password.length >= 8) {
-                        axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
-                            .then(response => {
-                                console.log('Success:', response.data)
-                                if (response.data.status === "success") {
-                                    alert("Registration Successfull")
-                                    navigate("/login")
-                                }
-                            })
-                            .catch(error => {
-                                if (error.response) {
-                                    console.error('Server Response:', error.response.data);
-                                    alert(error.response.data.message)
-                                } else if (error.request) {
-                                    console.error('No Response:', error.request);
-                                } else {
-                                    console.error('Request Error:', error.message);
-                                }
-                            });
+                    if (password.length <= 12) {
+                        if (password.length >= 8) {
+                            axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
+                                .then(response => {
+                                    console.log('Success:', response.data)
+                                    if (response.data.status === "success") {
+                                        alert("Registration Successfull")
+                                        navigate("/login")
+                                    }
+                                })
+                                .catch(error => {
+                                    if (error.response) {
+                                        console.error('Server Response:', error.response.data);
+                                        alert(error.response.data.message)
+                                    } else if (error.request) {
+                                        console.error('No Response:', error.request);
+                                    } else {
+                                        console.error('Request Error:', error.message);
+                                    }
+                                });
 
-                        // To Clear The Inputs
-                        setEmail("");
-                        setPassword("");
-                        setRepeatPassword("");
-                        setUsername("")
-                        setEmailVerified(false)
+                            // To Clear The Inputs
+                            setEmail("");
+                            setPassword("");
+                            setRepeatPassword("");
+                            setUsername("")
+                            setEmailVerified(false)
+                        }
+                        else {
+                            alert("Password Must Be Atleast 8 Characters")
+                        }
                     }
-                    else{
-                        alert("Password Must Be Atleast 8 Characters And Maximum 12 Characters")
+                    else {
+                        alert("Password Cannot Be Above 12 Characters")
                     }
                 }
                 else {
