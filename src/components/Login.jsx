@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import axios from "axios"
@@ -16,24 +16,24 @@ const Login = () => {
 
         // To Post The User Data To The Server
 
-        axios.post('http://localhost:2006/api/login/', { email, password }, { withCredentials: true })
-            .then(response => {
-                console.log('Success:', response.data)
-                if (response.data.status === "success") {
-                    navigate("/dashboard")
-                }
-
-            })
-            .catch(error => {
-                if (error.response) {
-                    console.error('Server Response:', error.response.data);
-                } else if (error.request) {
-                    console.error('No Response:', error.request);
-                } else {
-                    console.error('Request Error:', error.message);
-                }
-            });
-
+        axios.post('http://localhost:2006/api/login/', { email, password },{withCredentials:true})
+        .then(response => {
+            console.log('Success:', response.data)
+            if(response.data.status === "success"){
+                navigate("/dashboard")
+            }
+          
+        })
+        .catch(error => {
+          if (error.response) {
+            console.error('Server Response:', error.response.data);
+          } else if (error.request) {
+            console.error('No Response:', error.request);
+          } else {
+            console.error('Request Error:', error.message);
+          }
+        });
+      
         // To Clear The Inputs
         setEmail("");
         setPassword("")
@@ -81,9 +81,9 @@ const Login = () => {
                             className="absolute bottom-[10px] right-2 focus:outline-none"
                         >
                             {showPassword ? (
-                                <img src="./img/unhide.svg" alt="show" />
+                                <img src="/img/unhide.svg" alt="show" />
                             ) : (
-                                <img src="./img/hide.svg" alt="hide" />
+                            <img src="/img/hide.svg" alt="hide" />
                             )}
                         </button>
                     </div>
