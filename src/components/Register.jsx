@@ -23,7 +23,7 @@ const Register = () => {
             //   To Post The User Data To The Server
             if (emailVerified) {
                 if (username.length >= 5) {
-                    if (12 > password > 8) {
+                    if (12 > password.length > 8) {
                         axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
                             .then(response => {
                                 console.log('Success:', response.data)
