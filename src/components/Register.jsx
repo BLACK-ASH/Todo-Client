@@ -22,28 +22,40 @@ const Register = () => {
 
             //   To Post The User Data To The Server
             if (emailVerified) {
-                axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
-                    .then(response => {
-                        console.log('Success:', response.data)
-                        if (response.data.status === "success") {
-                            navigate("/login")
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response) {
-                            console.error('Server Response:', error.response.data);
-                        } else if (error.request) {
-                            console.error('No Response:', error.request);
-                        } else {
-                            console.error('Request Error:', error.message);
-                        }
-                    });
+                if (username.length >= 5) {
+                    if (12 > password > 8) {
+                        axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
+                            .then(response => {
+                                console.log('Success:', response.data)
+                                if (response.data.status === "success") {
+                                    alert("Registration Successfull")
+                                    navigate("/login")
+                                }
+                            })
+                            .catch(error => {
+                                if (error.response) {
+                                    console.error('Server Response:', error.response.data);
+                                    alert(error.response.data.message)
+                                } else if (error.request) {
+                                    console.error('No Response:', error.request);
+                                } else {
+                                    console.error('Request Error:', error.message);
+                                }
+                            });
 
-                // To Clear The Inputs
-                setEmail("");
-                setPassword("");
-                setRepeatPassword("");
-                setUsername("")
+                        // To Clear The Inputs
+                        setEmail("");
+                        setPassword("");
+                        setRepeatPassword("");
+                        setUsername("")
+                    }
+                    else{
+                        alert("Password Must Be Atleast 8 Characters And Maximum 12 Characters")
+                    }
+                }
+                else {
+                    alert("Username Must Be Atleast 5 Characters")
+                }
             }
             else {
                 alert("Email Not Verified")
