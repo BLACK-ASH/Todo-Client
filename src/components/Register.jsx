@@ -126,6 +126,7 @@ const Register = () => {
             // handle error
             if (error.response) {
                 console.error('Server Response:', error.response.data);
+                alert(error.response.data)
             } else if (error.request) {
                 console.error('No Response:', error.request);
             } else {
