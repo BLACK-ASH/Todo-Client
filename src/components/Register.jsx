@@ -36,7 +36,7 @@ const Register = () => {
                                         console.log('Success:', response.data)
                                         if (response.data.status === "success") {
                                             alert("Registration Successfull")
-                                            navigate("/home")
+                                            navigate("/")
                                         }
                                     });
                             } catch (error) {
