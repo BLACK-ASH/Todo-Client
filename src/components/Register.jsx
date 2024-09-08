@@ -15,7 +15,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     // To Handle Submit
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (password === repeatPassword) {
             console.info({ email, password, repeatPassword, username });
@@ -24,24 +24,30 @@ const Register = () => {
                 if (username.length >= 5) {
                     if (password.length <= 12) {
                         if (password.length >= 8) {
-                            axios.post('https://todo-server-ikof.onrender.com/api/register/', { email, username, password }, { withCredentials: true })
-                                .then(response => {
-                                    console.log('Success:', response.data)
-                                    if (response.data.status === "success") {
-                                        alert("Registration Successfull")
-                                        navigate("/login")
-                                    }
+                            try {
+                                await instance({
+                                    url: "register/",
+                                    method: "POST",
+                                    data: { email, username, password },
                                 })
-                                .catch(error => {
-                                    if (error.response) {
-                                        console.error('Server Response:', error.response.data);
-                                        alert(error.response.data.message)
-                                    } else if (error.request) {
-                                        console.error('No Response:', error.request);
-                                    } else {
-                                        console.error('Request Error:', error.message);
-                                    }
-                                });
+                                    .then((response) => {
+                                        // handle success
+                                        console.log('Success:', response.data)
+                                        if (response.data.status === "success") {
+                                            alert("Registration Successfull")
+                                            navigate("/home")
+                                        }
+                                    });
+                            } catch (error) {
+                                // handle error
+                                if (error.response) {
+                                    console.error('Server Response:', error.response.data);
+                                } else if (error.request) {
+                                    console.error('No Response:', error.request);
+                                } else {
+                                    console.error('Request Error:', error.message);
+                                }
+                            }
 
                             // To Clear The Inputs
                             setEmail("");
@@ -102,6 +108,7 @@ const Register = () => {
                 if (error.response) {
                     console.error('Server Response:', error.response.data);
                     alert(error.response.data)
+                    
                 } else if (error.request) {
                     console.error('No Response:', error.request);
                 } else {

@@ -1,24 +1,15 @@
-import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { Link } from 'react-router-dom';
-import axios from "axios"
-
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [Username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    axios.get('https://todo-server-ikof.onrender.com/api/user/profile/', { withCredentials: true })
-      .then((response) => {
-        const userInfo = response.data.username;
-        setUsername(userInfo)
-      })
-      .catch((err) => {
-
-      })
+    const storedUsername = localStorage.getItem("username");
+    setUsername(storedUsername);
   }, []);
-
 
   return (
     <>
@@ -27,13 +18,13 @@ function App() {
       <div className="md:h-[calc(100vh-72px)] p-2 max-sm:mb-14 overflow-auto custom-scrollbar bg-gray-100 flex flex-col justify-center items-center">
         <div className="max-w-4xl  my-3  mx-auto text-center p-8 bg-white shadow-lg rounded-lg max-sm:m-2 ">
           <h1 className="text-5xl font-bold text-gray-900 mb-8">Welcome to Your To-Do List App
-            <p className=' text-blue-600'  >{Username}</p>
+            <p className=' text-blue-600'>{username ? username : ""}</p>
           </h1>
           <p className="text-lg text-gray-700 mb-8">
             Organize your tasks, boost your productivity, and never miss a deadline. Register or log in to start managing your to-do list!
           </p>
           {
-            Username ?
+            username ?
               <div className="flex justify-center space-x-4">
                 <Link to="/dashboard" className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow hover:bg-blue-700">
                   Dashboard
@@ -49,7 +40,6 @@ function App() {
                 </Link>
               </div>
           }
-
         </div>
 
         <div className="mt-12 px-2 py-4">
@@ -78,7 +68,7 @@ function App() {
       </div>
       <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

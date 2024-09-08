@@ -3,7 +3,7 @@ import Footer from './Footer';
 import Navbar from './Navbar';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from "axios"
+import instance from '../api/axios_instance';
 
 const Dashboard = () => {
   const [todos, setTodos] = useState([]);
@@ -13,32 +13,55 @@ const Dashboard = () => {
   const [first, setFirst] = useState(true)
   const navigate = useNavigate();
 
-  const url = "https://todo-server-ikof.onrender.com"
-
   useEffect(() => {
-    axios.get(url + '/api/user/todos', { withCredentials: true })
-      .then((response) => {
-        const userTodos = response.data.todos.reverse();
-        setTodos(userTodos)
-      })
-      .catch((err) => {
+    const getData = async () => {
+      try {
+        await instance({
+          // url of the api endpoint (can be changed)
+          url: "/user/todos/",
+          method: "GET",
+        }).then((response) => {
+          // handle success
+          const userTodos = response.data.todos.reverse();
+          setTodos(userTodos)
+        });
+      } catch (error) {
+        console.log(error);
+
         alert("Login Require To Access Dashboard")
         navigate("/login")
-      })
+      }
+    }
+    getData()
   }, [first])
 
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     if (task.trim() === '') return;
     const newTodo = { todo: task, isCompleted: false };
     setTask('');
-    axios.put(url + "/api/user/todos", newTodo, { withCredentials: true })
-      .then((response) => {
-        setFirst(!first)
+
+    try {
+      await instance({
+        url: "/user/todos/",
+        method: "PUT",
+        data: newTodo,
       })
-      .catch((err) => {
-        console.log(err);
-      })
+        .then((response) => {
+          // handle success
+          setFirst(!first)
+        });
+    } catch (error) {
+      // handle error
+      if (error.response) {
+        console.error('Server Response:', error.response.data);
+        alert(error.response.data)
+      } else if (error.request) {
+        console.error('No Response:', error.request);
+      } else {
+        console.error('Request Error:', error.message);
+      }
+    }
   };
 
   const handleEditTodo = (todo) => {
@@ -47,7 +70,7 @@ const Dashboard = () => {
     setTask(todo.todo);
   };
 
-  const handleUpdateTodo = () => {
+  const handleUpdateTodo = async () => {
     setTodos(
       todos.map((todo) =>
         todo.id === currentTodo.id ? { ...todo, todo: task } : todo
@@ -56,31 +79,58 @@ const Dashboard = () => {
     setTask('');
     setIsEditing(false);
     setCurrentTodo({});
-    axios.patch(url + "/api/user/todos", { id: currentTodo.id, todo: task, isCompleted: currentTodo.isCompleted }, { withCredentials: true })
-      .then((response) => {
-        setFirst(!first)
+
+    try {
+      await instance({
+        url: "/user/todos/",
+        method: "PATCH",
       })
-      .catch((err) => {
-        console.log(err);
-      })
-     
+        .then((response) => {
+          // handle success
+          setFirst(!first)
+        });
+    } catch (error) {
+      // handle error
+      if (error.response) {
+        console.error('Server Response:', error.response.data);
+        alert(error.response.data)
+      } else if (error.request) {
+        console.error('No Response:', error.request);
+      } else {
+        console.error('Request Error:', error.message);
+      }
+    }
   };
 
   // To Handle Delete
-  const handleDeleteTodo = (id) => {
+  const handleDeleteTodo = async (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
 
     // To Delete In Server
-    axios.delete(url + `/api/user/todos/${id}`, { withCredentials: true })
-      .then((response) => {
-        setFirst(!first)
+
+    try {
+      await instance({
+        url: `/user/todos/${id}/`,
+        method: "DELETE",
       })
-      .catch((err) => {
-        console.log(err);
-      })
+        .then((response) => {
+          // handle success
+          setFirst(!first)
+        });
+    } catch (error) {
+      // handle error
+      if (error.response) {
+        console.error('Server Response:', error.response.data);
+        alert(error.response.data)
+      } else if (error.request) {
+        console.error('No Response:', error.request);
+      } else {
+        console.error('Request Error:', error.message);
+      }
+    }
   };
 
-  const handleToggleComplete = (todo) => {
+  const handleToggleComplete = async (todo) => {
     setTodos(
       todos.map((e) =>
         e.id === todo.id ? { ...e, completed: !e.completed } : e
@@ -92,15 +142,27 @@ const Dashboard = () => {
       id: todo.id
     }
 
-
-    axios.patch(url + "/api/user/todos", updatedTodo, { withCredentials: true })
-      .then((response) => {
-            setFirst(!first)
+    try {
+      await instance({
+        url: "/user/todos/",
+        method: "PATCH",
+        data: updatedTodo,
       })
-      .catch((err) => {
-        console.log(err);
-      })
-
+        .then((response) => {
+          // handle success
+          setFirst(!first)
+        });
+    } catch (error) {
+      // handle error
+      if (error.response) {
+        console.error('Server Response:', error.response.data);
+        alert(error.response.data)
+      } else if (error.request) {
+        console.error('No Response:', error.request);
+      } else {
+        console.error('Request Error:', error.message);
+      }
+    }
   };
 
   return (

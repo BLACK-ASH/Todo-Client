@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import Footer from './Footer';
 import Navbar from './Navbar';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import instance from '../api/axios_instance';
 
 const Profile = () => {
     const [profile, setProfile] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch the user's profile
-        axios.get('https://todo-server-ikof.onrender.com/api/user/profile/', { withCredentials: true })
-            .then((response) => {
-                const userInfo = response.data;
-                setProfile(userInfo);
-            })
-            .catch((err) => {
-                alert("Login required to access profile");
-                navigate('/login');
-            });
-    }, [navigate]);
+        const getData = async () => {
+
+            try {
+                await instance({
+                    // url of the api endpoint (can be changed)
+                    url: "/user/profile/",
+                    method: "GET",
+                }).then((response) => {
+                    // handle success
+                    const userInfo = response.data;
+                    setProfile(userInfo);
+                });
+            } catch (error) {
+                // handle error
+                console.error(error);
+                alert("Login Required To See Profile")
+                navigate("/login")
+            }
+        }
+        getData()
+    }, []);
 
     const signOut = () => {
         // Sign-out request
-        axios.post('https://todo-server-ikof.onrender.com/api/signout', {}, { withCredentials: true })
-            .then((response) => {
-                if (response.data.status === 'success') {
-                    // After signing out, redirect to the login page
-                    navigate('/login');
-                }
-            })
-            .catch((err) => {
-                alert("Error signing out, please try again.");
-            });
+        localStorage.clear()
+        navigate("/")
     }
 
     return (

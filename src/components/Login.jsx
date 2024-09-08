@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
-import axios from "axios"
+import instance from '../api/axios_instance';
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -11,29 +11,38 @@ const Login = () => {
     const navigate = useNavigate();
 
     // To Handle Submit
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // To Post The User Data To The Server
 
-        axios.post('https://todo-server-ikof.onrender.com/api/login/', { email, password },{withCredentials:true})
-        .then(response => {
-            console.log('Success:', response.data)
-            if(response.data.status === "success"){
-                navigate("/dashboard")
+        try {
+            await instance({
+                url: "/login/",
+                method: "POST",
+                data: { email, password },
+            })
+                .then((response) => {
+                    // handle success
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem("username", response.data.payload.username);
+                    if (response.data.status === "success") {
+                        alert("Login Successful")
+                        navigate("/")
+                    }
+                });
+        } catch (error) {
+            // handle error
+            if (error.response) {
+                console.error('Server Response:', error.response.data);
+                alert(error.response.data)
+            } else if (error.request) {
+                console.error('No Response:', error.request);
+            } else {
+                console.error('Request Error:', error.message);
             }
-          
-        })
-        .catch(error => {
-          if (error.response) {
-            console.error('Server Response:', error.response.data);
-          } else if (error.request) {
-            console.error('No Response:', error.request);
-          } else {
-            console.error('Request Error:', error.message);
-          }
-        });
-      
+        }
+
         // To Clear The Inputs
         setEmail("");
         setPassword("")
@@ -83,7 +92,7 @@ const Login = () => {
                             {showPassword ? (
                                 <img src="/img/unhide.svg" alt="show" />
                             ) : (
-                            <img src="/img/hide.svg" alt="hide" />
+                                <img src="/img/hide.svg" alt="hide" />
                             )}
                         </button>
                     </div>
