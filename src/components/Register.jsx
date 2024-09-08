@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import axios from 'axios';
+import instance from '../api/axios_instance';
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -83,38 +84,54 @@ const Register = () => {
     };
 
     // TO handle Otp
-    const handleOtp = () => {
-        axios.post('https://todo-server-ikof.onrender.com/api/register-otp', { email })
-            .then(response => {
+    const handleOtp = async () => {
+
+        try {
+            await instance({
+                url: "/register-otp/",
+                method: "POST",
+                data: { email },
             })
-            .catch(error => {
-                if (error.response) {
-                    console.error('Server Response:', error.response.data);
-                } else if (error.request) {
-                    console.error('No Response:', error.request);
-                } else {
-                    console.error('Request Error:', error.message);
-                }
-            });
+                .then((response) => {
+                    // handle success
+                    console.log('Success:', response.data)
+                    alert(`otp send to your email ${email}`)
+                });
+        } catch (error) {
+            // handle error
+            if (error.response) {
+                console.error('Server Response:', error.response.data);
+            } else if (error.request) {
+                console.error('No Response:', error.request);
+            } else {
+                console.error('Request Error:', error.message);
+            }
+        }
     }
     // To Verifiy Otp
-    const handleOtpSubmit = () => {
-        axios.post('https://todo-server-ikof.onrender.com/api/verify-otp', { email, otp })
-            .then(response => {
-                setEmailVerified(true)
-                alert(response.data)
+    const handleOtpSubmit = async () => {
+
+        try {
+            await instance({
+                url: "/verify-otp/",
+                method: "POST",
+                data: { email, otp },
             })
-            .catch(error => {
-                if (error.response) {
-                    console.error('Server Response:', error.response.data);
-                    alert(error.response.data)
-                    
-                } else if (error.request) {
-                    console.error('No Response:', error.request);
-                } else {
-                    console.error('Request Error:', error.message);
-                }
-            });
+                .then((response) => {
+                    // handle success
+                    setEmailVerified(true)
+                    alert(response.data)
+                });
+        } catch (error) {
+            // handle error
+            if (error.response) {
+                console.error('Server Response:', error.response.data);
+            } else if (error.request) {
+                console.error('No Response:', error.request);
+            } else {
+                console.error('Request Error:', error.message);
+            }
+        }
     }
 
 
