@@ -33,9 +33,10 @@ const Register = () => {
                                 })
                                     .then((response) => {
                                         // handle success
-                                        console.log('Success:', response.data)
+                                        localStorage.setItem('token', response.data.token);
+                                        localStorage.setItem("username", response.data.payload.username);
                                         if (response.data.status === "success") {
-                                            alert("Registration Successfull")
+                                            alert("Registration Successful")
                                             navigate("/")
                                         }
                                     });
