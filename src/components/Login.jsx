@@ -1,51 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import instance from '../api/axios_instance';
-import { ToastContainer } from 'react-toastify';
+import { useForm } from "react-hook-form";
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Loader from './Loader';
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false);
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
 
     // To Handle Submit
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const onSubmit = async (data) => {
         // To Post The User Data To The Server
 
         try {
             await instance({
                 url: "/login/",
                 method: "POST",
-                data: { email, password },
+                data:data,
             })
                 .then(async (response) => {
                     // handle success
-          
+
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem("username", response.data.payload.username);
-                    toast.success("Login Successful", {
-                        position: "top-center",
-                        autoClose: 1500,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                    });
+                    toast.success("Login Successful");
                     if (response.data.status === "success") {
                         setTimeout(() => {
                             navigate("/");
-                            // To Clear The Inputs
-                            setEmail("");
-                            setPassword("")
                         }, 1500);
                     }
                 });
@@ -53,16 +38,7 @@ const Login = () => {
             // handle error
             if (error.response) {
                 console.error('Server Response:', error.response.data);
-                toast.error(error.response.data.message, {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                toast.error(error.response.data.message);
             } else if (error.request) {
                 console.error('No Response:', error.request);
             } else {
@@ -80,29 +56,16 @@ const Login = () => {
 
     return (
         <>
-            <ToastContainer
-                position="top-center"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
             <Navbar />
+            {isSubmitting && <Loader />}
             <div className="max-w-sm mx-auto p-8 my-4 bg-white shadow-xl rounded-lg">
                 <h1 className='text-3xl font-semibold my-3'>Login</h1>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     {/* Email Input */}
                     <div className="mb-5">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                         <input
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            type="email"
+                            {...register("email", { required: true })}
                             id="email"
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                             placeholder="name@gmail.com"
@@ -114,8 +77,7 @@ const Login = () => {
                     <div className="mb-5 relative">
                         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
                         <input
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            {...register("password", { required: true })}
                             type={showPassword ? 'text' : 'password'}
                             id="password"
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"

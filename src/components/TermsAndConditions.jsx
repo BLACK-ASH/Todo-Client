@@ -15,7 +15,7 @@ const TermsAndConditions = () => {
     <>
       <Navbar />
 
-      <div className="p-8 max-w-4xl mx-auto bg-white shadow-xl rounded-lg">
+      <div className="p-8 max-w-4xl mb-24 mx-auto bg-white shadow-xl rounded-lg">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-800">Terms and Conditions</h1>
         <p className="text-sm text-gray-500 mb-10 text-center">
           <strong>Last Updated: Sep 7, 2024</strong>

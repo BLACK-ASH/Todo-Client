@@ -85,18 +85,7 @@ const Profile = () => {
                 <button onClick={signOut} className="mt-4 p-2 bg-red-500 text-white rounded">Sign out</button>
             </div>
             <Footer />
-            <ToastContainer
-                position="top-center"
-                autoClose={2000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
+       
         </div>
     );
 }

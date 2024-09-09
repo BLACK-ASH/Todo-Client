@@ -2,91 +2,32 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
-import axios from 'axios';
 import instance from '../api/axios_instance';
+import { useForm } from "react-hook-form";
+import { toast } from 'react-toastify';
+import Loader from './Loader';
 
 const Register = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [repeatPassword, setRepeatPassword] = useState("");
-    const [username, setUsername] = useState("");
     const [otp, setOtp] = useState("");
     const [emailVerified, setEmailVerified] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [displayOtpBox, setDisplayOtpBox] = useState(false);
     const navigate = useNavigate();
-
-    // To Handle Submit
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (password === repeatPassword) {
-            console.info({ email, password, repeatPassword, username });
-            //   To Post The User Data To The Server
-            if (emailVerified) {
-                if (username.length >= 5) {
-                    if (password.length <= 12) {
-                        if (password.length >= 8) {
-                            try {
-                                await instance({
-                                    url: "register/",
-                                    method: "POST",
-                                    data: { email, username, password },
-                                })
-                                    .then((response) => {
-                                        // handle success
-                                        localStorage.setItem('token', response.data.token);
-                                        localStorage.setItem("username", response.data.payload.username);
-                                        if (response.data.status === "success") {
-                                            alert("Registration Successful")
-                                            navigate("/")
-                                        }
-                                    });
-                            } catch (error) {
-                                // handle error
-                                if (error.response) {
-                                    console.error('Server Response:', error.response.data);
-                                } else if (error.request) {
-                                    console.error('No Response:', error.request);
-                                } else {
-                                    console.error('Request Error:', error.message);
-                                }
-                            }
-
-                            // To Clear The Inputs
-                            setEmail("");
-                            setPassword("");
-                            setRepeatPassword("");
-                            setUsername("")
-                            setEmailVerified(false)
-                        }
-                        else {
-                            alert("Password Must Be Atleast 8 Characters")
-                        }
-                    }
-                    else {
-                        alert("Password Cannot Be Above 12 Characters")
-                    }
-                }
-                else {
-                    alert("Username Must Be Atleast 5 Characters")
-                }
-            }
-            else {
-                alert("Email Not Verified")
-            }
-        }
-        else {
-            return alert("Password Not Match");
-        }
-    }
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
 
     // To Handle Show
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+
+    // Watch password and confirmPassword fields for custom validation
+    const password = watch("password");
+    const email = watch("email")
+
     // TO handle Otp
     const handleOtp = async () => {
-
+        toast.success("Otp Sending")
         try {
             await instance({
                 url: "/register-otp/",
@@ -95,8 +36,17 @@ const Register = () => {
             })
                 .then((response) => {
                     // handle success
-                    console.log('Success:', response.data)
-                    alert(`otp send to your email ${email}`)
+                    setDisplayOtpBox(true)
+                    toast.success("Otp Send", {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
                 });
         } catch (error) {
             // handle error
@@ -121,13 +71,32 @@ const Register = () => {
                 .then((response) => {
                     // handle success
                     setEmailVerified(true)
-                    alert(response.data)
+                    toast.success(response.data, {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                    setDisplayOtpBox(false)
                 });
         } catch (error) {
             // handle error
             if (error.response) {
                 console.error('Server Response:', error.response.data);
-                alert(error.response.data)
+                toast.error(error.response.data, {
+                    position: "top-center",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             } else if (error.request) {
                 console.error('No Response:', error.request);
             } else {
@@ -136,52 +105,131 @@ const Register = () => {
         }
     }
 
+    // To Handle Submit
+    const onSubmit = async (data) => {
+        if (emailVerified) {
+
+            try {
+                await instance({
+                    url: "register/",
+                    method: "POST",
+                    data: data,
+                }).then((response) => {
+                    // handle success
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem("username", response.data.payload.username);
+                    toast.success("Registration Successful", {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                    if (response.data.status === "success") {
+                        setEmailVerified(false);
+                        setTimeout(() => {
+                            navigate("/");
+                        }, 1500);
+                    }
+                });
+            } catch (error) {
+                // handle error
+                if (error.response) {
+                    console.error('Server Response:', error.response.data);
+                    toast.error(error.response.data.message, {
+                        position: "top-center",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                } else if (error.request) {
+                    console.error('No Response:', error.request);
+                } else {
+                    console.error('Request Error:', error.message);
+                }
+            }
+        };
+    }
+
+
 
     return (
         <>
             <Navbar />
-
-            <div className="max-w-sm  mx-auto p-8 my-4 bg-white shadow-xl rounded-lg">
+            {isSubmitting && <Loader />}
+            <div className={`${displayOtpBox ? "block" : "hidden"} max-w-sm mx-auto p-8 my-4 bg-white shadow-xl rounded-lg`}>
+                <label htmlFor="Otp" className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Otp Verification</label>
+                <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" id="otp" name='otp' className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter Otp" required />
+                <button
+                    type="button"
+                    onClick={handleOtpSubmit}
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-2 w-full dark:focus:ring-blue-800">Verify Otp</button>
+            </div>
+            <div className={`${displayOtpBox ? "hidden" : "block"} max-w-sm  mx-auto p-8 my-4 bg-white shadow-xl rounded-lg`}>
                 <h1 className='text-3xl font-semibold my-3' >Register</h1>
-                <form onSubmit={handleSubmit} >
-                    <div className="mb-5">
+                <form onSubmit={handleSubmit(onSubmit)} >
+                    <div className="mb-1">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                        <input name='email' value={email} onChange={(e) => setEmail(e.target.value)} type="email" id="email" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@gmail.com" required />
+                        <input disabled={emailVerified} name='email'  {...register("email", { required: true })} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@gmail.com" required />
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleOtp}
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 mb-2 w-full dark:focus:ring-blue-800">Verify Email</button>
-                    <div className="mb-5">
-                        <label htmlFor="Otp" className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Otp Verification</label>
-                        <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" id="otp" name='otp' className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter Otp" required />
-                        <button
-                            type="button"
-                            onClick={handleOtpSubmit}
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-2 w-full dark:focus:ring-blue-800">Verify Otp</button>
-                    </div>
-
+                    {
+                        emailVerified ?
+                            <span className="text-green-600 text-sm font-semibold rounded-md" >Email Verified !</span>
+                            :
+                            <button
+                                type="button"
+                                onClick={handleOtp}
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 mb-2 w-full dark:focus:ring-blue-800">Verify Email
+                            </button>
+                    }
 
 
                     <div className="mb-5">
                         <label htmlFor="Username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
-                        <input name='username' value={username} onChange={(e) => setUsername(e.target.value)} type="text" id="Username" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Username" required autoComplete='name' />
+                        <input name='username' {...register("username", { required: true, maxLength: { value: 12, message: "Maximum 12 Character Allowed" }, minLength: { value: 5, message: "Username Must Be Atleast 5 Character" } })} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Username" required autoComplete='name' />
+                        {errors.username && (
+                            <span className="text-red-600 text-sm font-semibold  p-2 rounded-md">
+                                {errors.username.message}
+                            </span>
+                        )}
                     </div>
                     <div className="mb-5 relative">
                         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
                         <input
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             type={showPassword ? 'text' : 'password'}
-                            id="password"
-                            name='password'
+                            {...register("password", {
+                                pattern: {
+                                    value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/i,
+                                    message:
+                                        "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+                                },
+                                validate: {
+                                    noSpaces: (value) => !/\s/.test(value) || "Password must not contain spaces.",
+                                },
+                                minLength: {
+                                    value: 8,
+                                    message: "Password must be at least 8 characters long.",
+                                },
+                                maxLength: {
+                                    value: 12,
+                                    message: "Password cannot be more than 12 characters long.",
+                                },
+                            })}
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                             required
                         />
+
                         <button
                             type="button"
                             onClick={togglePasswordVisibility}
-                            className="absolute bottom-[10px] right-2 focus:outline-none"
+                            className="absolute top-9 right-2 focus:outline-none"
                         >
                             {showPassword ? (
                                 <img src="/img/unhide.svg" alt="show" />
@@ -189,10 +237,25 @@ const Register = () => {
                                 <img src="/img/hide.svg" alt="hide" />
                             )}
                         </button>
+                        {errors.password && (
+                            <span className="text-red-600 text-sm font-semibold  p-2 rounded-md">
+                                {errors.password.message}
+                            </span>
+                        )}
                     </div>
                     <div className="mb-5">
-                        <label htmlFor="repeat-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
-                        <input name='password' value={repeatPassword} onChange={e => setRepeatPassword(e.target.value)} type="text" id="repeat-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+                        <label htmlFor="confirm-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                        <input name='confirmPassword'  {...register("confirmPassword",
+                            {
+                                required: true, maxLength: { value: 12, message: "Maximum 12 Character Allowed" },
+                                minLength: { value: 8, message: "Password Must Be Atleast 8 Character" },
+                                validate: value => value === password || "Passwords do not match"
+                            })} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+                        {errors.confirmPassword && (
+                            <span className="text-red-600 text-sm font-semibold  p-2 rounded-md">
+                                {errors.confirmPassword.message}
+                            </span>
+                        )}
                     </div>
                     <div className="flex items-start mb-5">
                         <div className="flex items-center h-5">
@@ -203,12 +266,11 @@ const Register = () => {
                     <div>
                         <span>Already have a account ?<Link to="/login" className="text-blue-600 hover:underline dark:text-blue-500">Go To Login</Link>  </span>
                     </div>
-                    <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-4  w-full dark:focus:ring-blue-800">Register new account</button>
+                    <button type="submit" disabled={isSubmitting} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-4  w-full dark:focus:ring-blue-800">Register</button>
                 </form>
             </div>
             <Footer />
         </>
-
     )
 }
 

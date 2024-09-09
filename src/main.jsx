@@ -11,16 +11,9 @@ import Register from './components/Register.jsx'
 import Login from './components/Login.jsx'
 import About from './components/About.jsx';
 import Profile from './components/Profile.jsx';
-import Dashboard from './components/Dashboard.jsx'; 
-
-const sampleProfileData = {
-  username: 'john_doe',
-  id: '123456',
-  email: 'john.doe@example.com',
-  totalTasks: 10,
-  tasksCompleted: 6,
-  tasksRemaining: 4,
-};
+import Dashboard from './components/Dashboard.jsx';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = createBrowserRouter([
   {
@@ -33,7 +26,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <Login/>,
+    element: <Login />,
   },
   {
     path: '/register',
@@ -41,11 +34,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/about',
-    element: <About/>,
+    element: <About />,
   },
   {
     path: '/profile',
-    element: <Profile profileData={sampleProfileData}/>,
+    element: <Profile />,
   },
   {
     path: '/dashboard',
@@ -58,5 +51,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <RouterProvider router={router}>
       <App />
     </RouterProvider>
+    <ToastContainer
+      position="top-center"
+      autoClose={2000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
   </React.StrictMode>
 );
