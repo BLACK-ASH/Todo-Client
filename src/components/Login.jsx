@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import instance from '../api/axios_instance';
+import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -22,20 +25,44 @@ const Login = () => {
                 method: "POST",
                 data: { email, password },
             })
-                .then((response) => {
+                .then(async (response) => {
                     // handle success
+          
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem("username", response.data.payload.username);
+                    toast.success("Login Successful", {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
                     if (response.data.status === "success") {
-                        alert("Login Successful")
-                        navigate("/")
+                        setTimeout(() => {
+                            navigate("/");
+                            // To Clear The Inputs
+                            setEmail("");
+                            setPassword("")
+                        }, 1500);
                     }
                 });
         } catch (error) {
             // handle error
             if (error.response) {
                 console.error('Server Response:', error.response.data);
-                alert(error.response.data)
+                toast.error(error.response.data.message, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             } else if (error.request) {
                 console.error('No Response:', error.request);
             } else {
@@ -43,9 +70,7 @@ const Login = () => {
             }
         }
 
-        // To Clear The Inputs
-        setEmail("");
-        setPassword("")
+
     }
 
     // To Handle Show
@@ -55,6 +80,18 @@ const Login = () => {
 
     return (
         <>
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             <Navbar />
             <div className="max-w-sm mx-auto p-8 my-4 bg-white shadow-xl rounded-lg">
                 <h1 className='text-3xl font-semibold my-3'>Login</h1>

@@ -4,6 +4,9 @@ import Navbar from './Navbar';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import instance from '../api/axios_instance';
+import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = () => {
   const [todos, setTodos] = useState([]);
@@ -12,6 +15,7 @@ const Dashboard = () => {
   const [currentTodo, setCurrentTodo] = useState({});
   const [first, setFirst] = useState(true)
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const getData = async () => {
@@ -27,9 +31,19 @@ const Dashboard = () => {
         });
       } catch (error) {
         console.log(error);
-
-        alert("Login Require To Access Dashboard")
-        navigate("/login")
+        toast.error("Login Require To Access Dashboard", {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
     }
     getData()

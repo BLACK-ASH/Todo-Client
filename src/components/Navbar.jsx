@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Navbar = () => {
   const [display, setDisplay] = useState(true);
@@ -7,10 +10,12 @@ const Navbar = () => {
 
   const signOut = () => {
     // Sign-out request
-    localStorage.clear();
-    navigate("/");
-  };
-
+    toast.info('Signed out successfully!');
+    localStorage.clear()
+    setTimeout(() => {
+      navigate("/");
+    }, 3000);
+  }
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -174,6 +179,18 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </nav>
   );
 };

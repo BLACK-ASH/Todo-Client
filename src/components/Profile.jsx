@@ -3,6 +3,10 @@ import Footer from './Footer';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 import instance from '../api/axios_instance';
+import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Profile = () => {
     const [profile, setProfile] = useState({});
@@ -20,12 +24,15 @@ const Profile = () => {
                     // handle success
                     const userInfo = response.data;
                     setProfile(userInfo);
+                    toast.success('Profile loaded successfully!');
                 });
             } catch (error) {
                 // handle error
                 console.error(error);
-                alert("Login Required To See Profile")
-                navigate("/login")
+                toast.error('Failed to load profile. Please log in.');
+                setTimeout(() => {
+                    navigate("/login");
+                }, 1500);
             }
         }
         getData()
@@ -33,8 +40,11 @@ const Profile = () => {
 
     const signOut = () => {
         // Sign-out request
+        toast.info('Signed out successfully!');
         localStorage.clear()
-        navigate("/")
+        setTimeout(() => {
+            navigate("/");
+        }, 3000);
     }
 
     return (
@@ -75,6 +85,18 @@ const Profile = () => {
                 <button onClick={signOut} className="mt-4 p-2 bg-red-500 text-white rounded">Sign out</button>
             </div>
             <Footer />
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     );
 }
