@@ -12,6 +12,7 @@ const Register = () => {
     const [emailVerified, setEmailVerified] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [displayOtpBox, setDisplayOtpBox] = useState(false);
+    const [otpSend, setOtpSend] = useState(true)
     const navigate = useNavigate();
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
 
@@ -26,8 +27,11 @@ const Register = () => {
     const email = watch("email")
 
     // TO handle Otp
+
+
     const handleOtp = async () => {
         toast.success("Otp Sending")
+        setOtpSend(false)
         try {
             await instance({
                 url: "/register-otp/",
@@ -36,6 +40,7 @@ const Register = () => {
             })
                 .then((response) => {
                     // handle success
+                    setOtpSend(true)
                     setDisplayOtpBox(true)
                     toast.success("Otp Send", {
                         position: "top-center",
@@ -108,7 +113,6 @@ const Register = () => {
     // To Handle Submit
     const onSubmit = async (data) => {
         if (emailVerified) {
-
             try {
                 await instance({
                     url: "register/",
@@ -164,6 +168,7 @@ const Register = () => {
         <>
             <Navbar />
             {isSubmitting && <Loader />}
+            {!otpSend && <Loader />}
             <div className={`${displayOtpBox ? "block" : "hidden"} max-w-sm mx-auto p-8 my-4 bg-white shadow-xl rounded-lg`}>
                 <label htmlFor="Otp" className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Otp Verification</label>
                 <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" id="otp" name='otp' className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter Otp" required />
