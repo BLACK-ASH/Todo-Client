@@ -13,6 +13,8 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [displayOtpBox, setDisplayOtpBox] = useState(false);
     const [otpSend, setOtpSend] = useState(true)
+    const [timeLeft, setTimeLeft] = useState(120); // 120 seconds = 2 minutes
+    const [isDisabled, setIsDisabled] = useState(true);
     const navigate = useNavigate();
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
 
@@ -64,6 +66,64 @@ const Register = () => {
             }
         }
     }
+    // To Resend Otp
+    const handleResendOtp = async () => {
+        setIsDisabled(true);
+        try {
+            toast.success("Otp Sending")
+            await instance({
+                url: "/resend-otp/",
+                method: "POST",
+                data: { email },
+            })
+                .then((response) => {
+                    // handle success
+                    setTimeLeft(120);
+                    setOtpSend(true)
+                    setDisplayOtpBox(true)
+                    toast.success("Otp Resend", {
+                        position: "top-center",
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                })
+        } catch (error) {
+            // handle error
+            if (error.response) {
+                console.error('Server Response:', error.response.data);
+            } else if (error.request) {
+                console.error('No Response:', error.request);
+            } else {
+                console.error('Request Error:', error.message);
+            }
+        }
+    }
+
+    // To Show Resend Otp
+    useEffect(() => {
+        if (timeLeft === 0) {
+            setIsDisabled(false);
+            return;
+        }
+        const timerId = setTimeout(() => {
+            setTimeLeft(timeLeft - 1);
+        }, 1000);
+
+        return () => clearTimeout(timerId);
+    }, [timeLeft]);
+
+    // To Format Time
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds} m`;
+    };
+
     // To Verifiy Otp
     const handleOtpSubmit = async () => {
 
@@ -170,12 +230,23 @@ const Register = () => {
             {isSubmitting && <Loader />}
             {!otpSend && <Loader />}
             <div className={`${displayOtpBox ? "block" : "hidden"} max-w-sm mx-auto p-8 my-4 bg-white shadow-xl rounded-lg`}>
-                <label htmlFor="Otp" className="block mb-2 text-lg font-medium text-gray-900 dark:text-white">Otp Verification</label>
+                <h3 className='text-2xl text-center my-1' >Otp Verfication</h3>
+                <p className=' my-2' >Enter the OTP sent to <span className='font-bold text-blue-600 ' >{email}</span></p>
+                <label htmlFor="Otp" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Otp</label>
                 <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" id="otp" name='otp' className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="Enter Otp" required />
                 <button
                     type="button"
                     onClick={handleOtpSubmit}
                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-2 w-full dark:focus:ring-blue-800">Verify Otp</button>
+                <div className='flex justify-between items-center' >
+                    <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-2 w-fit dark:focus:ring-blue-800" onClick={() => setDisplayOtpBox(false)}>Go Back</button>
+                    {isDisabled ?
+                        <p>Resend Otp in <span className='font-bold text-red-600 ' >{formatTime(timeLeft)}</span></p>
+                        :
+                        <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 my-2 w-fit dark:focus:ring-blue-800" onClick={handleResendOtp} >Resend Otp</button>
+                    }
+
+                </div>
             </div>
             <div className={`${displayOtpBox ? "hidden" : "block"} max-w-sm  mx-auto p-8 my-4 bg-white shadow-xl rounded-lg`}>
                 <h1 className='text-3xl font-semibold my-3' >Register</h1>
