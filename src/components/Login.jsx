@@ -35,7 +35,7 @@ const Login = () => {
                     }
                 });
         } catch (error) {
-            // handle error
+            // handle error        
             if (error.response) {
                 console.error('Server Response:', error.response.data);
                 toast.error(error.response.data.message);
