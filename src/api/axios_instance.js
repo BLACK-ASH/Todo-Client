@@ -1,6 +1,7 @@
 import axios from "axios";
 const instance = axios.create({
-  baseURL: 'https://todo-server-ikof.onrender.com/api/',
+  baseURL: 'https://todo-server-ikof.onrender.com/api/', // For production
+  // baseURL: 'http://localhost:2006/api/', // For development
   headers: {
     "Content-Type": "application/json",
   },

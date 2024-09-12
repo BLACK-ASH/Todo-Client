@@ -99,6 +99,9 @@ const Login = () => {
                     <div>
                         <span>Don't have an account? <Link to="/register" className="text-blue-600 hover:underline dark:text-blue-500">Go To Register</Link></span>
                     </div>
+                    <div>
+                        <span>Forgot Password? <Link to="/change-password" className="text-blue-600 hover:underline dark:text-blue-500">Click Here</Link></span>
+                    </div>
 
                     <button
                         type="submit"

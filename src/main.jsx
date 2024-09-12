@@ -12,6 +12,7 @@ import Login from './components/Login.jsx'
 import About from './components/About.jsx';
 import Profile from './components/Profile.jsx';
 import Dashboard from './components/Dashboard.jsx';
+import ChangePassword from './components/ChangePassword.jsx';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     path: '/dashboard',
     element: <Dashboard />,
   },
+  {
+    path: '/change-password',
+    element: <ChangePassword />,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

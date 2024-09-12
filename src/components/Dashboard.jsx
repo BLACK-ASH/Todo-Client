@@ -31,6 +31,7 @@ const Dashboard = () => {
         });
       } catch (error) {
         console.log(error);
+        localStorage.clear();
         toast.error("Login Require To Access Dashboard", {
           position: "top-center",
           autoClose: 1500,
