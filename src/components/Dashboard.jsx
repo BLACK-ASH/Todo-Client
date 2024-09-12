@@ -99,6 +99,7 @@ const Dashboard = () => {
       await instance({
         url: "/user/todos/",
         method: "PATCH",
+        data: { ...currentTodo, todo: task },
       })
         .then((response) => {
           // handle success
